@@ -1,10 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
+﻿using bullets;
+using UnityEngine;
 
 namespace Scripts.hw
 {
     public class MovementController : MonoBehaviour
     {
+        // public Action<bool> OnBullutsSpawn; 
+        
         [Header("Movement")]
         [SerializeField] private float _speed = 5f;
         [SerializeField] private float _jumpForce = 5f;
@@ -13,6 +15,7 @@ namespace Scripts.hw
         
         private Rigidbody2D _rigidbody;
         private SpriteRenderer _sprite;
+        private BulletsSpawner _bulletsSpawner;
         
         private bool _isGrounded; 
         private bool _isFacingRight = true;
@@ -37,6 +40,7 @@ namespace Scripts.hw
             _sprite  = GetComponentInChildren<SpriteRenderer>();
             _groundChecker = GetComponentInChildren<GroundChecker>();
             _animator = GetComponent<Animator>();
+            _bulletsSpawner = GetComponentInChildren<BulletsSpawner>();
         }
 
         private void Update()
@@ -56,6 +60,11 @@ namespace Scripts.hw
             if (_movement.x > 0 && !_isFacingRight || _movement.x < 0 && _isFacingRight)
             {
                 Flip();
+            }
+            
+            if (Input.GetButtonDown("Fire1"))
+            {
+                _bulletsSpawner.SpawnBullet(transform.position);
             }
         }
 
