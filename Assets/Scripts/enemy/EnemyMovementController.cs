@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class EnemyMovementController : MonoBehaviour
 {
-    public Action<GameObject> OnBulletEnter;
-    
     [SerializeField]private EnemyType type;
     private IEnemy _enemy;
     private Vector2 _startPosition;
@@ -36,7 +34,6 @@ public class EnemyMovementController : MonoBehaviour
         
         if (go.tag == "Bullet")
         {
-            OnBulletEnter.Invoke(go);
             _onDamage = true;
         }
     }
@@ -45,5 +42,4 @@ public class EnemyMovementController : MonoBehaviour
     {
         return _onDamage;
     }
-
 }
