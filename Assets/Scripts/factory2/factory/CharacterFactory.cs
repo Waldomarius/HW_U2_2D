@@ -1,31 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace factory2.factory
 {
     public enum CharacterType
     {
-        Fly,
-        Saw,
-        Boss
+        Bat,
+        Bee,
+        BlueBird,
+        Chicken
     }
 
-    public interface ICharacterFactory
+    public enum MovementType
     {
-        void CreateCharacterOfType(CharacterType type, Color color);
-        void CreateAllCharacters(Color color);
+        None,
+        Horizontal,
+        Vertical,
+        Sinusoidal,
+        Circular
     }
 
+    
     public interface ICharacter
     {
+        string Name { get;}
         CharacterType  Type { get; }
         void Spawn(Vector2 position);
         void ChangeColor(Color color);
         void Attack();
     }
     
-    public class CharacterFactory : MonoBehaviour, ICharacterFactory 
+    public class CharacterFactory : MonoBehaviour
     {
         [Serializable]
         private class CharacterPrefab
@@ -35,27 +42,42 @@ namespace factory2.factory
         }
         
         [Serializable]
-        private class SpawnPointGroup
+        public class SpawnPointData
         {
-            public CharacterType type;
-            public List<Vector2> spawnPoints = new List<Vector2>();
+            public Vector2 position;
+            public Color color = Color.white;
+            
+            public MovementType movementType = MovementType.Horizontal;
+            public float moveSpeed = 2f;
+            public float amplitude = 1f;
+            public float frequency = 2f;
+            public float distanceX = 3f;
+            public float distanceY = 2f;
         }
+
+        [Serializable]
+        public class CharacterSpawnConfig
+        {
+            public CharacterType characterType;
+            public List<SpawnPointData> spawnPoints = new List<SpawnPointData>();
+        }
+        
         
         [Header("Prefabs")]
         [SerializeField] private List<CharacterPrefab> _characterPrefabs = new List<CharacterPrefab>();
         
         [Header("Spawn Points")]
-        [SerializeField] private List<SpawnPointGroup> _spawnPointGroups = new List<SpawnPointGroup>();
+        [SerializeField] private List<CharacterSpawnConfig> _spawnConfigs = new List<CharacterSpawnConfig>();
         
         
         private Dictionary<CharacterType, GameObject> _prefabDictionary;
-        private Dictionary<CharacterType, List<Vector2>> _spawnPointGroupDictionary;
+        private Dictionary<CharacterType, List<SpawnPointData>> _spawnPointGroupDictionary;
         private Transform _charactersParent;
 
         public void Initialize()
         {
             _prefabDictionary = new Dictionary<CharacterType, GameObject>();
-            _spawnPointGroupDictionary = new Dictionary<CharacterType, List<Vector2>>();
+            _spawnPointGroupDictionary = new Dictionary<CharacterType, List<SpawnPointData>>();
             
             // Инициализация словарей
             foreach (var characterPrefab in _characterPrefabs)
@@ -68,23 +90,21 @@ namespace factory2.factory
 
             foreach (CharacterType type in Enum.GetValues(typeof(CharacterType)))
             {
-                _spawnPointGroupDictionary[type] = new List<Vector2>();
+                _spawnPointGroupDictionary[type] = new List<SpawnPointData>();
             }
             
             // Заполнение словарей
-            foreach (var group in _spawnPointGroups)
+            foreach (var config in _spawnConfigs)
             {
-                _spawnPointGroupDictionary[group.type] = new List<Vector2>(group.spawnPoints);
+                _spawnPointGroupDictionary[config.characterType] = new List<SpawnPointData>(config.spawnPoints);
             }
             
-            _charactersParent = GameObject.Find("Characters").transform;
+            _charactersParent = new GameObject("Enemy").transform;
             
             Debug.Log($"CharactersFactory initialized");
-            Debug.Log($"Prefabs: {_characterPrefabs.Count}");
-            Debug.Log($"Spawn points: {GetTotalSpawnPointsCount()}");
         }
             
-        public void CreateCharacterOfType(CharacterType type, Color color)
+        public void CreateCharactersOfType(CharacterType type, Color colorDefault)
         {
             if (!_prefabDictionary.ContainsKey(type))
             {
@@ -99,44 +119,61 @@ namespace factory2.factory
                 return;
             }
             
-            Debug.Log($"Creating {spawnPoints.Count} , {type} with color {color}");
+            Debug.Log($"Creating {spawnPoints.Count} , {type} with color {colorDefault}");
 
-            foreach (Vector2 spawnPoint in spawnPoints)
+            foreach (var spawnData in spawnPoints)
             {
-                CreateSingleCharacter(type, color, spawnPoint);
+                Color characterColor = spawnData.color != Color.white ? spawnData.color : colorDefault;
+                CreateCharacterFromSpawnPointData(type, spawnData, characterColor);
             }
+        }
+
+        private void CreateCharacterFromSpawnPointData(CharacterType type, SpawnPointData spawnData, Color characterColor)
+        {
+            GameObject characterObject = Instantiate(
+                _prefabDictionary[type],
+                spawnData.position,
+                Quaternion.identity,
+                _charactersParent);
             
-            Debug.Log($" Successfully created {spawnPoints.Count} , {type} characters");
-        }
-
-        public void CreateAllCharacters(Color color)
-        {
-            Debug.Log($"Creating all characters.............");
-
-            foreach (CharacterType type in Enum.GetValues(typeof(CharacterType)))
-            {
-                CreateCharacterOfType(type, color);
-            }
-        }
-        
-        private ICharacter CreateSingleCharacter(CharacterType type, Color color, Vector2 spawnPoint)
-        {
-            GameObject characterObject = 
-                Instantiate(_prefabDictionary[type], spawnPoint, Quaternion.identity, _charactersParent);
             ICharacter character = characterObject.GetComponent<ICharacter>();
             if (character == null)
             {
                 Debug.LogError($"Prefab doesn't implement ICharacter interface! Type {type}");
                 Destroy(characterObject);
-                return null;
+                return;
+            }
+            SpriteRenderer sr = characterObject.GetComponent<SpriteRenderer>();
+            if (sr == null)
+            {
+                Debug.LogError($"No SpriteRenderer found on prefab for {type}!");
+            }
+            else
+            {
+                Debug.Log($"SpriteRenderer found. Current color: {sr.color}, new color: {characterColor}");
+            }
+
+            if (character is BaseCharacter baseCharacter)
+            {
+                baseCharacter.SetMovement(spawnData);
             }
             
-            character.ChangeColor(color);
-            character.Spawn(spawnPoint);
+            character.ChangeColor(characterColor);
+            character.Spawn(spawnData.position);
             
-            return character;
+
+            spawnedObjects.Add(character);
         }
-        
+
+        public void CreateAllCharacters(Color colorDefault)
+        {
+            Debug.Log($"Creating all characters.............");
+
+            foreach (CharacterType type in Enum.GetValues(typeof(CharacterType)))
+            {
+                CreateCharactersOfType(type, colorDefault);
+            }
+        }
 
         public int GetSpawnPointCount(CharacterType type)
         {
@@ -154,8 +191,33 @@ namespace factory2.factory
             return total;
         }
 
-        private void CreateCharactersOfType(CharacterType type, Color color)
+        
+        // Список заспавненых врагов
+        List<ICharacter> spawnedObjects = new List<ICharacter>();
+        
+        /**
+         * Проверим что у врага сработал триггер с пулей и вернем объект пули.
+         */
+        public GameObject TriggeredGameObject()
         {
+            GameObject triggerObject = null;
+            ICharacter enemy = null;
+            foreach (ICharacter character in spawnedObjects)
+            {
+                if (character is BaseCharacter characterBase && characterBase.triggerObject != null)
+                {
+                    enemy =  character;
+                    triggerObject = characterBase.triggerObject;
+                    break;
+                }
+            }
+
+            if (enemy != null)
+            {
+                spawnedObjects.Remove(enemy);
+            }
+            
+            return triggerObject;
         }
     }
 }
