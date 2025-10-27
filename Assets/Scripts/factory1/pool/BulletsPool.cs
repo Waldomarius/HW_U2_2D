@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using bullets;
 using UnityEngine;
 
 namespace pool
@@ -51,6 +52,8 @@ namespace pool
 
         public void ReturnBullet(GameObject go)
         {
+            BulletMoveComponent component = go.GetComponent<BulletMoveComponent>();
+            component.ResetDirection();
             go.SetActive(false);
         }
 

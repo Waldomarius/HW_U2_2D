@@ -1,11 +1,13 @@
-﻿using bullets;
+﻿using System;
+using bullets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Scripts.hw
 {
     public class MovementController : MonoBehaviour
     {
-        // public Action<bool> OnBullutsSpawn; 
+        public Action<int> lootUpdate; 
         
         [Header("Movement")]
         [SerializeField] private float _speed = 5f;
@@ -73,11 +75,33 @@ namespace Scripts.hw
             _sprite.flipX = _isFacingRight;
             _isFacingRight = !_isFacingRight;
         }
-
+        
+        public void OnTriggerEnter2D(Collider2D collision)
+        {
+            GameObject go = collision.gameObject;
+            if (go.tag == "Loot")
+            {
+                lootUpdate?.Invoke(1);
+                Destroy(go);
+            }
+            
+            if (go.tag == "Enemy")
+            {
+                // Перезапустить сцену после смерти
+                SceneManager.LoadScene( SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+        
+        public bool GetFlipState()
+        {
+            return _isFacingRight;
+        }
+        
         private void OnDisable()
         {
             // Отписка от слушателя
             _groundChecker.OnGroundStateChange -= HandleGroundStateChanged;
         }
+
     }
 }

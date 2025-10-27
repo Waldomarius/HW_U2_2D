@@ -7,6 +7,7 @@ namespace factory2
     {
         [Header("Factory References")]
         [SerializeField] private CharacterFactory _characterFactory;
+        [SerializeField] private LootFactory _lootFactory;
         
         [Header("Warm Up settings")]
         [SerializeField] private Color _warmUpColor = Color.red;
@@ -16,16 +17,38 @@ namespace factory2
 
         private void Start()
         {
+            StartCharacterFactory();
+            StartLootFactory();
+        }
+        
+        private void StartCharacterFactory()
+        {
             if (!CheckFactory())
             {
                 return;
             }
             
             _characterFactory.Initialize();
-
+            
             if (_warmUpOnStart)
             {
                 WarmAllCharacters();
+            }
+        }
+
+        private void StartLootFactory()
+        {
+            if (!_lootFactory)
+            {
+                return;
+            }
+            
+            _lootFactory.Initialize();
+            
+            if (_warmUpOnStart)
+            {
+                Debug.Log(" ========  Warm Up Creating All Loots  ======== ");
+                _lootFactory.CreateAllLoots();
             }
         }
 
