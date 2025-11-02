@@ -132,10 +132,6 @@ namespace factory2.factory
             {
                 Debug.LogError($"No SpriteRenderer found on prefab for {type}!");
             }
-            else
-            {
-                Debug.Log($"SpriteRenderer found.");
-            }
             
             loot.Spawn(spawnData.position);
         }

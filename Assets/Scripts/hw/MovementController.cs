@@ -63,11 +63,6 @@ namespace Scripts.hw
             {
                 Flip();
             }
-            
-            if (Input.GetButtonDown("Fire1"))
-            {
-                _bulletsSpawner.SpawnBullet(transform.position);
-            }
         }
 
         private void Flip()

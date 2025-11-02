@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2791383071453542449}
   - component: {fileID: 7190232621922515167}
   - component: {fileID: 3468057004628148820}
-  - component: {fileID: 3658799653307734593}
+  - component: {fileID: 3942894297772523490}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Enemy
@@ -123,7 +123,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterName: Bat
   _characterType: 1
-  onTrigger: 0
   _movementType: 1
   _speed: 2
   _amplitude: 1
@@ -175,7 +174,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.65217394}
   m_EdgeRadius: 0
---- !u!50 &3658799653307734593
+--- !u!50 &3942894297772523490
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0

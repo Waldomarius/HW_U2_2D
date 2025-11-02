@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 5655494373009540642}
   - component: {fileID: 429977350375582149}
   - component: {fileID: 1339822260251459608}
-  - component: {fileID: 400027513568978962}
-  - component: {fileID: 6990021744223193388}
+  - component: {fileID: 8897964248651932840}
+  - component: {fileID: -1340129968630025519}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: PistolBullet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +132,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &400027513568978962
+--- !u!114 &8897964248651932840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,11 +141,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2401856659845880334}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c466518a95be4281bce60d97a61a57d9, type: 3}
+  m_Script: {fileID: 11500000, guid: e15cd01a5aca46dc9feb5ca300e6f690, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 7
---- !u!50 &6990021744223193388
+  lifeTime: 1.4
+--- !u!50 &-1340129968630025519
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -153,14 +153,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2401856659845880334}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
