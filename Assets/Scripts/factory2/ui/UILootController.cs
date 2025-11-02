@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace factory2
 {
-    public class ScoreCounterController : MonoBehaviour
+    public class UILootController : MonoBehaviour
     {
         [SerializeField] private GameObject _player;
         
         private MovementController _movementController;
         private int _lootCount;
         private TextMeshProUGUI _scoreGo;
-        private const string ScoreText = "Score: ";
+        private const string ScoreText = "";
 
         private void OnEnable()
         {

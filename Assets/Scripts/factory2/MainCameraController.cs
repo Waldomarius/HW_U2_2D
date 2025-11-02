@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace factory2
 {
+    /**
+     * Управление перемещением камеры во время игры.
+     */
     public class MainCameraController : MonoBehaviour
     {
         [SerializeField] private GameObject _player;

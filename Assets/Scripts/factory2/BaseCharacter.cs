@@ -1,7 +1,4 @@
-﻿using System;
-using bullets;
-using factory2.factory;
-using pool;
+﻿using factory2.factory;
 using UnityEngine;
 
 namespace factory2
@@ -16,8 +13,7 @@ namespace factory2
         public CharacterType Type => _characterType;
         
         protected SpriteRenderer _spriteRenderer;
-
-        public GameObject triggerObject { get; set; }
+        public bool isDestroyed;
 
         protected virtual void Awake()
         {
@@ -50,13 +46,15 @@ namespace factory2
             
         }
         
+        
+
         public void OnTriggerEnter2D(Collider2D collision)
         {
             GameObject go = collision.gameObject;
         
             if (go.tag == "Bullet")
             {
-                triggerObject = go;
+                isDestroyed = true;
                 Destroy(gameObject);
             }
         }

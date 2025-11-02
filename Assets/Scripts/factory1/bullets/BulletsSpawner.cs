@@ -20,15 +20,5 @@ namespace bullets
             GameObject go = _Pool.GetOrCreateBullet(position);
             _Pool.ReturnBullet(go , 1.5f);
         }
-        
-        private void Update()
-        {
-            GameObject go = _characterFactory.TriggeredGameObject();
-            if (go != null)
-            {
-                _Pool.ReturnBullet(go);
-            }
-        }
-
     }
 }

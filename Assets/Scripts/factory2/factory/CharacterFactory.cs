@@ -69,7 +69,9 @@ namespace factory2.factory
         [Header("Spawn Points")]
         [SerializeField] private List<CharacterSpawnConfig> _spawnConfigs = new List<CharacterSpawnConfig>();
         
-        
+        public Action<int> enemyUpdate;
+        // Список заспавненых врагов
+        private List<ICharacter> _spawnedObjects = new List<ICharacter>();
         private Dictionary<CharacterType, GameObject> _prefabDictionary;
         private Dictionary<CharacterType, List<SpawnPointData>> _spawnPointGroupDictionary;
         private Transform _charactersParent;
@@ -162,7 +164,7 @@ namespace factory2.factory
             character.Spawn(spawnData.position);
             
 
-            spawnedObjects.Add(character);
+            _spawnedObjects.Add(character);
         }
 
         public void CreateAllCharacters(Color colorDefault)
@@ -192,32 +194,19 @@ namespace factory2.factory
         }
 
         
-        // Список заспавненых врагов
-        List<ICharacter> spawnedObjects = new List<ICharacter>();
+
+
         
-        /**
-         * Проверим что у врага сработал триггер с пулей и вернем объект пули.
-         */
-        public GameObject TriggeredGameObject()
+        public void Update()
         {
-            GameObject triggerObject = null;
-            ICharacter enemy = null;
-            foreach (ICharacter character in spawnedObjects)
+            foreach (ICharacter character in _spawnedObjects)
             {
-                if (character is BaseCharacter characterBase && characterBase.triggerObject != null)
+                if (character is BaseCharacter characterBase && characterBase.isDestroyed)
                 {
-                    enemy =  character;
-                    triggerObject = characterBase.triggerObject;
-                    break;
+                    enemyUpdate?.Invoke(1);
+                    characterBase.isDestroyed = false;
                 }
             }
-
-            if (enemy != null)
-            {
-                spawnedObjects.Remove(enemy);
-            }
-            
-            return triggerObject;
         }
     }
 }
